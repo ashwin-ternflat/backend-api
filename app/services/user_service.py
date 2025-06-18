@@ -3,7 +3,7 @@ from app.models.user import User
 from datetime import datetime
 from app.core.database import get_user_collection
 from datetime import datetime, timezone
-
+from pymongo import ReturnDocument
 
 async def create_user(user: User):
     user_dict = user.model_dump()
@@ -24,3 +24,17 @@ async def fetch_all_users():
         user["_id"] = str(user["_id"])
         users.append(user)
     return users
+
+async def update_user(email: str, update_data: dict):
+    updated_user = await db["users"].find_one_and_update(
+        {"email": email},
+        {"$set": update_data},
+        return_document=ReturnDocument.AFTER
+    )
+    if updated_user:
+        updated_user["_id"] = str(updated_user["_id"])
+    return updated_user
+
+async def delete_user(email: str):
+    result = await db["users"].delete_one({"email": email})
+    return result.deleted_count > 0

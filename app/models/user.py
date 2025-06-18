@@ -17,3 +17,7 @@ class UserOut(BaseModel):
     class Config:
         populate_by_name = True
         from_attributes = True
+
+class UpdateUser(BaseModel): # partial updates
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
