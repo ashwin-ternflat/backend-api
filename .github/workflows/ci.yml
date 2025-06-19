@@ -19,6 +19,8 @@ jobs:
 
     env:
       MONGO_URI: mongodb://localhost:27017/backend_api_db
+      MONGO_DB_NAME: backend_api_db
+      APP_NAME: backend_api
 
     steps:
     - name: Checkout code
