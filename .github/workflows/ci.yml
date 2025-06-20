@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     services:
@@ -15,11 +15,11 @@ jobs:
         image: mongo:6.0
         ports:
           - 27017:27017
-
-    env:
-      MONGO_URI: mongodb://localhost:27017/backend_api_db
-      MONGO_DB_NAME: backend_api_db
-      APP_NAME: backend_api
+        options: >-
+          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
     - name: Checkout code
@@ -35,9 +35,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Wait for MongoDB to be healthy
+    - name: Wait for MongoDB to be ready
       run: |
-        until mongo --host localhost --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+        until mongosh --eval "db.adminCommand('ping')"; do
           echo "Waiting for MongoDB to be ready..."
           sleep 2
         done
